@@ -1,0 +1,52 @@
+html {
+	box-sizing: border-box;
+	font-size: 62.5%; // 62.5% of 16px = 10px
+}
+
+* {
+	appearance: none;
+	box-sizing: border-box;
+	line-height: 1.2em;
+	margin: 0;
+	outline: 0;
+	padding: 0;
+
+	&:required,
+	&:valid,
+	&:invalid {
+		box-shadow: none;
+		outline: 0;
+	}
+
+	&:focus {
+		outline: 0;
+	}
+
+	::before,
+	::after {
+		box-sizing: inherit;
+	}
+}
+
+body {
+	font-size: 1.6rem; // 10px * 1.6 = 16px
+}
+
+a {
+	color: inherit;
+}
+
+button,
+select,
+input {
+	font: {
+		family: inherit;
+		size: inherit;
+	}
+}
+
+button {
+	&:focus {
+		outline: none;
+	}
+}
