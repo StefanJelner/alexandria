@@ -19,10 +19,6 @@
 		keydown: KeyboardEvent;
 		keyup: KeyboardEvent;
 		keypress: KeyboardEvent;
-		mouseover: MouseEvent;
-		mouseout: MouseEvent;
-		mouseenter: MouseEvent;
-		mouseleave: MouseEvent;
 	}
 
 	// typing slots
@@ -31,13 +27,16 @@
 	}
 
 	// The input attributes
-	export let text: string = '';
-	export let disabled: boolean = false;
+
 	// little trick for using the reserved word "class"
 	let className: ClassNamesArgument = {};
 	export { className as class };
-	export let iconPosition: ButtonIconPosition = ButtonIconPosition.LEFT;
+
+	export let text: string = '';
 	export let hideText: boolean = false;
+	export let iconPosition: ButtonIconPosition = ButtonIconPosition.LEFT;
+
+	export let disabled: boolean = false;
 
 	// Normal variables
 	const component = get_current_component();
@@ -83,9 +82,9 @@
 <button
 	class={classNames(
 		'button',
-		className,
 		$$slots.icon ? `button--has-icon button--has-icon--${iconPosition}` : false,
-		hideText ? 'button--hide-text' : false
+		hideText ? 'button--hide-text' : false,
+		className
 	)}
 	{disabled}
 	on:click
@@ -94,10 +93,6 @@
 	on:keydown={normalizeKeydownEvent}
 	on:keyup
 	on:keypress
-	on:mouseover
-	on:mouseout
-	on:mouseenter
-	on:mouseleave
 >
 	{#if $$slots.icon}
 		<div class="button__icon" use:checkForSVG>
@@ -126,7 +121,14 @@
 		}
 
 		&__icon {
+			height: var(--button-icon-height);
 			margin-right: var(--button-icon-margin);
+			width: var(--button-icon-width);
+
+			:global(svg) {
+				height: 100%;
+				width: 100%;
+			}
 		}
 
 		&--has-icon--right {
@@ -138,6 +140,10 @@
 				right: 0;
 				left: var(--button-icon-margin);
 			}
+		}
+
+		&--hide-text &__icon {
+			margin: 0;
 		}
 
 		&--hide-text &__text {

@@ -2,6 +2,7 @@
 	import '$lib/styles/custom-properties.scss';
 	import '$lib/styles/normalize.scss';
 	import Button, { ButtonIconPosition } from '$lib/components/Button.svelte';
+	import TextInput, { TextInputIconPosition } from '$lib/components/TextInput.svelte';
 </script>
 
 <dl>
@@ -33,6 +34,12 @@
 
 	<dt>button with SVG icon left and hidden text</dt>
 	<dd><Button text="test" hideText={true}><svg slot="icon"></svg></Button></dd>
+
+	<dt>text input</dt>
+	<dd><TextInput></TextInput></dd>
+
+	<dt>text input with label</dt>
+	<dd><TextInput label="Test"></TextInput></dd>
 </dl>
 
 <style lang="scss">

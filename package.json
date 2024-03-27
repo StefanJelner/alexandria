@@ -32,6 +32,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"classnames": "^2.5.1"
+		"@types/uuid": "^9.0.8",
+		"classnames": "^2.5.1",
+		"uuid": "^9.0.1"
 	}
 }
