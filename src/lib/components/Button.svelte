@@ -6,10 +6,18 @@
 </script>
 
 <script lang="ts">
-	import classNames, { type Argument as ClassNamesArgument } from 'classnames';
+	import { getDefaults, type ComponentDefaults } from '$lib/helpers/defaults.helper';
 	// @ts-ignore
 	import { get_current_component } from 'svelte/internal';
 	import type { ActionReturn } from 'svelte/action';
+
+	// props
+	interface $$Props extends ComponentDefaults {
+		text?: string;
+		hideText?: boolean;
+		iconPosition?: ButtonIconPosition;
+		disabled?: boolean;
+	}
 
 	// typing events
 	interface $$Events {
@@ -27,15 +35,9 @@
 	}
 
 	// The input attributes
-
-	// little trick for using the reserved word "class"
-	let className: ClassNamesArgument = {};
-	export { className as class };
-
 	export let text: string = '';
 	export let hideText: boolean = false;
 	export let iconPosition: ButtonIconPosition = ButtonIconPosition.LEFT;
-
 	export let disabled: boolean = false;
 
 	// Normal variables
@@ -80,12 +82,13 @@
 </script>
 
 <button
-	class={classNames(
-		'button',
-		$$slots.icon ? `button--has-icon button--has-icon--${iconPosition}` : false,
-		hideText ? 'button--hide-text' : false,
-		className
-	)}
+	{...getDefaults($$restProps, {
+		class: [
+			'button',
+			$$slots.icon ? `button--has-icon button--has-icon--${iconPosition}` : false,
+			hideText ? 'button--hide-text' : false
+		]
+	})}
 	{disabled}
 	on:click
 	on:focus

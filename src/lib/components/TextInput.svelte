@@ -67,11 +67,28 @@
 </script>
 
 <script lang="ts">
-	import classNames, { type Argument as ClassNamesArgument } from 'classnames';
+	import { getDefaults, type ComponentDefaults } from '$lib/helpers/defaults.helper';
 	// @ts-ignore
 	import { get_current_component } from 'svelte/internal';
 	import type { ActionReturn } from 'svelte/action';
 	import { v4 } from 'uuid';
+
+	// props
+	interface $$Props extends ComponentDefaults {
+		label?: string;
+		hideLabel?: boolean;
+		placeholder?: string;
+		iconPosition?: TextInputIconPosition;
+		disabled?: boolean;
+		readonly?: boolean;
+		required?: boolean;
+		pattern?: string;
+		autocomplete?: TextInputAutocomplete;
+		spellcheck?: boolean;
+		minlength?: number;
+		maxlength?: number;
+		datalist?: Array<string>;
+	}
 
 	// typing events
 	interface $$Events {
@@ -91,16 +108,10 @@
 	}
 
 	// The input attributes
-
-	// little trick for using the reserved word "class"
-	let className: ClassNamesArgument = {};
-	export { className as class };
-
 	export let label: string = '';
 	export let hideLabel: boolean = false;
 	export let placeholder: string = '';
 	export let iconPosition: TextInputIconPosition = TextInputIconPosition.LEFT;
-
 	export let disabled: boolean = false;
 	export let readonly: boolean = false;
 	export let required: boolean = false;
@@ -109,7 +120,6 @@
 	export let spellcheck: boolean = false;
 	export let minlength: number = -1;
 	export let maxlength: number = -1;
-
 	export let datalist: Array<string> = [];
 
 	// Normal variables
@@ -164,17 +174,18 @@
 </script>
 
 <div
-	class={classNames(
-		'textinput',
-		$$slots.icon ? `textinput--has-icon textinput--has-icon--${iconPosition}` : false,
-		hideLabel ? 'textinput--hide-label' : false,
-		disabled ? 'textinput--disabled' : false,
-		readonly ? 'textinput--readonly' : false,
-		required ? 'textinput--required' : false,
-		datalist.length > 0 ? 'textinput--has-datalist' : false,
-		focused ? 'textinput--focused' : false,
-		className
-	)}
+	{...getDefaults($$restProps, {
+		class: [
+			'textinput',
+			$$slots.icon ? `textinput--has-icon textinput--has-icon--${iconPosition}` : false,
+			hideLabel ? 'textinput--hide-label' : false,
+			disabled ? 'textinput--disabled' : false,
+			readonly ? 'textinput--readonly' : false,
+			required ? 'textinput--required' : false,
+			datalist.length > 0 ? 'textinput--has-datalist' : false,
+			focused ? 'textinput--focused' : false
+		]
+	})}
 >
 	{#if label.trim() !== ''}
 		<label class="textinput__label" for="textinput-id-{uuid}">{label}</label>
