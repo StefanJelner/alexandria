@@ -118,6 +118,7 @@
 		}
 		justify-content: center;
 		padding: var(--button-padding);
+		width: 100%;
 
 		&[disabled] {
 			cursor: not-allowed;
@@ -126,11 +127,11 @@
 		&__icon {
 			height: var(--button-icon-height);
 			margin-right: var(--button-icon-margin);
-			width: var(--button-icon-width);
+			width: 100%;
 
 			:global(svg) {
-				height: 100%;
-				width: 100%;
+				height: var(--button-icon-height);
+				width: var(--button-icon-width);
 			}
 		}
 
@@ -138,15 +139,34 @@
 			flex-direction: row-reverse;
 		}
 
+		&--has-icon--left &__icon {
+			text-align: right;
+		}
+
 		&--has-icon--right &__icon {
 			margin: {
 				right: 0;
 				left: var(--button-icon-margin);
 			}
+			text-align: left;
 		}
 
 		&--hide-text &__icon {
 			margin: 0;
+			text-align: center;
+		}
+
+		&__text {
+			text-align: center;
+			width: 100%;
+		}
+
+		&--has-icon--left &__text {
+			text-align: left;
+		}
+
+		&--has-icon--right &__text {
+			text-align: right;
 		}
 
 		&--hide-text &__text {

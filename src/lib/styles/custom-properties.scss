@@ -1,10 +1,14 @@
 body {
 	// button
-	--button-padding: 0.5rem 1rem;
+	--button-padding: 0.1rem 0.6rem;
 	--button-icon-margin: 1rem;
 	--button-icon-width: 2rem;
 	--button-icon-height: 2rem;
 
 	// textinput
 	--textinput-label-margin: 1rem;
+	--textinput-icon-margin: 1rem;
+	--textinput-icon-width: 2rem;
+	--textinput-icon-height: 2rem;
+	--textinput-border: 0.2rem inset #858585;
 }
