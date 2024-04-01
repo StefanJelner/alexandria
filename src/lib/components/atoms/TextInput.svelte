@@ -93,16 +93,21 @@
 </script>
 
 <script lang="ts">
-	import { getDefaults, type ComponentDefaults } from '$lib/helpers/defaults.helper';
+	import {
+		getDefaults,
+		type ComponentDefaults,
+		type ReturnDefaults
+	} from '$lib/helpers/defaults.helper';
+	import { checkForSVG } from '$lib/helpers/svg.helper';
 	// @ts-ignore
 	import { get_current_component } from 'svelte/internal';
-	import type { ActionReturn } from 'svelte/action';
 	import { v4 } from 'uuid';
 	// @ts-ignore
 	import { debounce } from 'throttle-debounce';
 
-	// props
+	// Typing props
 	interface $$Props extends ComponentDefaults {
+		value?: string;
 		label?: string;
 		hideLabel?: boolean;
 		placeholder?: string;
@@ -119,7 +124,7 @@
 		debounceInputEvent?: number;
 	}
 
-	// typing events
+	// Typing events
 	interface $$Events {
 		click: MouseEvent;
 		focus: FocusEvent;
@@ -132,12 +137,13 @@
 		invalid: Event;
 	}
 
-	// typing slots
+	// Typing slots
 	interface $$Slots {
 		icon: {};
 	}
 
 	// The input attributes
+	export let value: string = '';
 	export let label: string = '';
 	export let hideLabel: boolean = false;
 	export let placeholder: string = '';
@@ -158,8 +164,24 @@
 	const uuid = v4();
 	let focused: boolean = false;
 	let inputNode: HTMLInputElement;
+	let defaults: ReturnDefaults;
 
-	// export methods for binding
+	// Setting defaults
+	$: defaults = getDefaults($$restProps, {
+		class: [
+			'textinput',
+			label.trim() !== '' ? 'radio--has-label' : false,
+			hideLabel ? 'textinput--hide-label' : false,
+			$$slots.icon ? `textinput--has-icon textinput--has-icon--${iconPosition}` : false,
+			disabled ? 'textinput--disabled' : false,
+			readonly ? 'textinput--readonly' : false,
+			required ? 'textinput--required' : false,
+			datalist.length > 0 ? 'textinput--has-datalist' : false,
+			focused ? 'textinput--focused' : false
+		]
+	});
+
+	// Export methods for binding
 	export const methods: TextInputMethods = {
 		blur: () => {
 			inputNode.blur();
@@ -191,6 +213,15 @@
 		setSelectionRange: (...args) => {
 			return inputNode.setSelectionRange(...args);
 		},
+		// Even the "value" prop can be mutated directly, it sometimes behaves in a strange way
+		// and should rather be used for setting the initial value. (Strange means that the
+		// "value" attribute does not reflect the changes to the "value" property. Example:
+		// The "value" attribute has been set with the text "test". The user types something in
+		// so the text changes to "test123". Trying to set the input text back to "test" by setting
+		// the "value" attribute to "test" does not work, because the attribute still contains "test".
+		// Only the "value" property in the actual HTMLInputElement instance has changed. This is somehow
+		// a weird behaviour and therefore: Whenever you want to set the value of the text input during
+		// runtime, use this method.)
 		setValue: (value) => {
 			inputNode.value = value;
 		}
@@ -236,50 +267,20 @@
 			.forEach((callback: (e: Event) => void) => callback(e));
 	}
 
-	// debounce the input event handler if necessary (in a reactive way)
+	// Debounce the input event handler if necessary (in a reactive way)
 	let debouncedHandleInputEvent = handleInputEvent;
 	$: debouncedHandleInputEvent =
 		debounceInputEvent <= 0 ? handleInputEvent : debounce(debounceInputEvent, handleInputEvent);
-
-	/**
-	 * Checks if the icon slot contains only 1 element, which is an instance of SVGElement
-	 *
-	 * @param $icon the div element containing the icon slot
-	 */
-	function checkForSVG($icon: HTMLDivElement): ActionReturn {
-		$$slots.icon = $icon.childElementCount === 1 && $icon.firstChild instanceof SVGElement;
-
-		if ($$slots.icon === false) {
-			console.error(
-				`The icon slot for a TextInput component MUST contain a single SVG icon. Given content: ${$icon.innerHTML}`
-			);
-		}
-
-		return {};
-	}
 </script>
 
-<div
-	{...getDefaults($$restProps, {
-		class: [
-			'textinput',
-			$$slots.icon ? `textinput--has-icon textinput--has-icon--${iconPosition}` : false,
-			hideLabel ? 'textinput--hide-label' : false,
-			disabled ? 'textinput--disabled' : false,
-			readonly ? 'textinput--readonly' : false,
-			required ? 'textinput--required' : false,
-			datalist.length > 0 ? 'textinput--has-datalist' : false,
-			focused ? 'textinput--focused' : false
-		]
-	})}
->
+<div class={defaults.class}>
 	<div class="textinput__disabled-wrapper">
 		{#if label.trim() !== ''}
 			<label class="textinput__label" for="textinput-id-{uuid}">{label}</label>
 		{/if}
 		<div class="textinput__input-wrapper">
 			{#if $$slots.icon}
-				<div class="textinput__icon" use:checkForSVG>
+				<div class="textinput__icon" use:checkForSVG={[$$slots, 'icon', 'TextInput']}>
 					<slot name="icon" />
 				</div>
 			{/if}
@@ -288,9 +289,10 @@
 				class="textinput__input"
 				id={label.trim() !== '' ? `textinput-id-${uuid}` : null}
 				type="text"
+				value={value.trim() !== '' ? value : null}
 				placeholder={placeholder.trim() !== '' ? placeholder : null}
 				{readonly}
-				tabindex={disabled ? -1 : null}
+				tabindex={disabled ? -1 : defaults.tabindex}
 				inert={disabled}
 				{required}
 				pattern={pattern.trim() !== '' ? pattern : null}

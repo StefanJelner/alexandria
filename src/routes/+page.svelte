@@ -1,11 +1,12 @@
 <script lang="ts">
 	import '$lib/styles/custom-properties.scss';
 	import '$lib/styles/normalize.scss';
-	import Button, { ButtonIconPosition } from '$lib/components/Button.svelte';
+	import Button, { ButtonIconPosition } from '$lib/components/atoms/Button.svelte';
 	import TextInput, {
 		TextInputIconPosition,
 		type TextInputMethods
-	} from '$lib/components/TextInput.svelte';
+	} from '$lib/components/atoms/TextInput.svelte';
+	import Radio from '$lib/components/atoms/Radio.svelte';
 
 	const testClasses = ['test1', 'test2 test3', { test4: true }];
 	let textInputMethods: TextInputMethods;
@@ -43,6 +44,9 @@
 
 	<dt>text input</dt>
 	<dd><TextInput></TextInput></dd>
+
+	<dt>text input with predefined value</dt>
+	<dd><TextInput value="Test"></TextInput></dd>
 
 	<dt>text input with classes</dt>
 	<dd><TextInput class={testClasses}></TextInput></dd>
@@ -88,6 +92,11 @@
 			text="focus"
 			on:click={() => textInputMethods.focus()}
 		></Button>
+	</dd>
+
+	<dt>radio</dt>
+	<dd>
+		<Radio></Radio>
 	</dd>
 </dl>
 

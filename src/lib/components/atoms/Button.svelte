@@ -7,11 +7,11 @@
 
 <script lang="ts">
 	import { getDefaults, type ComponentDefaults } from '$lib/helpers/defaults.helper';
+	import { checkForSVG } from '$lib/helpers/svg.helper';
 	// @ts-ignore
 	import { get_current_component } from 'svelte/internal';
-	import type { ActionReturn } from 'svelte/action';
 
-	// props
+	// Typing props
 	interface $$Props extends ComponentDefaults {
 		text?: string;
 		hideText?: boolean;
@@ -19,7 +19,7 @@
 		disabled?: boolean;
 	}
 
-	// typing events
+	// Typing events
 	interface $$Events {
 		click: MouseEvent;
 		focus: FocusEvent;
@@ -29,7 +29,7 @@
 		keypress: KeyboardEvent;
 	}
 
-	// typing slots
+	// Typing slots
 	interface $$Slots {
 		icon: {};
 	}
@@ -62,23 +62,6 @@
 			.slice()
 			.forEach((callback: (e: KeyboardEvent) => void) => callback(e));
 	}
-
-	/**
-	 * Checks if the icon slot contains only 1 element, which is an instance of SVGElement
-	 *
-	 * @param $icon the div element containing the icon slot
-	 */
-	function checkForSVG($icon: HTMLDivElement): ActionReturn {
-		$$slots.icon = $icon.childElementCount === 1 && $icon.firstChild instanceof SVGElement;
-
-		if ($$slots.icon === false) {
-			console.error(
-				`The icon slot for a Button component MUST contain a single SVG icon. Given content: ${$icon.innerHTML}`
-			);
-		}
-
-		return {};
-	}
 </script>
 
 <button
@@ -98,7 +81,7 @@
 	on:keypress
 >
 	{#if $$slots.icon}
-		<div class="button__icon" use:checkForSVG>
+		<div class="button__icon" use:checkForSVG={[$$slots, 'icon', 'Button']}>
 			<slot name="icon" />
 		</div>
 	{/if}
